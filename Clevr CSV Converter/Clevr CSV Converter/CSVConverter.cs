@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.OleDb;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,54 +87,53 @@ namespace Clevr_CSV_Converter
         {
             public ClevrDataTable() 
             {
-                this.Columns.Add("EmployeeID", typeof(string));
-                this.Columns.Add("JobCode", typeof(string));
-                this.Columns.Add("BeginDate",typeof(DateTime));
-                this.Columns.Add("EndDate", typeof(DateTime));
+                this.Columns.Add("MATR", typeof(string));
+                this.Columns.Add("REF_EMPL", typeof(string));
+                this.Columns.Add("DATE_DEB", typeof(DateTime));
+                this.Columns.Add("DATE_FIN", typeof(DateTime));
+                this.Columns.Add("LIEU_TRAV", typeof(string));
+                this.Columns.Add("PDRequest", typeof(string));
+                this.Columns.Add("LIEU_TRAV", typeof(string));
 
-                this.Columns.Add("BudgetCode1", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount1", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter1", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject1", typeof(string));
+                this.Columns.Add("NO_CMPT1", typeof(string));
+                this.Columns.Add("MNT1", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT1", typeof(string));
+                this.Columns.Add("NO_PRJT1", typeof(string));
 
-                this.Columns.Add("BudgetCode2", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount2", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter2", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject2", typeof(string));
+                this.Columns.Add("NO_CMPT12", typeof(string));
+                this.Columns.Add("MNT2", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT2", typeof(string));
+                this.Columns.Add("NO_PRJT2", typeof(string));
 
-                this.Columns.Add("BudgetCode3", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount3", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter3", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject3", typeof(string));
+                this.Columns.Add("NO_CMPT13", typeof(string));
+                this.Columns.Add("MNT3", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT3", typeof(string));
+                this.Columns.Add("NO_PRJT3", typeof(string));
 
-                this.Columns.Add("BudgetCode4", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount4", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter4", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject4", typeof(string));
+                this.Columns.Add("NO_CMPT14", typeof(string));
+                this.Columns.Add("MNT4", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT4", typeof(string));
+                this.Columns.Add("NO_PRJT4", typeof(string));
 
-                this.Columns.Add("BudgetCode5", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount5", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter5", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject5", typeof(string));
+                this.Columns.Add("NO_CMPT15", typeof(string));
+                this.Columns.Add("MNT5", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT5", typeof(string));
+                this.Columns.Add("NO_PRJT5", typeof(string));
 
-                this.Columns.Add("BudgetCode6", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount6", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter6", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject6", typeof(string));
+                this.Columns.Add("NO_CMPT16", typeof(string));
+                this.Columns.Add("MNT6", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT6", typeof(string));
+                this.Columns.Add("NO_PRJT6", typeof(string));
 
-                this.Columns.Add("BudgetCode7", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount7", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter7", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject7", typeof(string));
+                this.Columns.Add("NO_CMPT17", typeof(string));
+                this.Columns.Add("MNT7", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT7", typeof(string));
+                this.Columns.Add("NO_PRJT7", typeof(string));
 
-                this.Columns.Add("BudgetCode8", typeof(string));
-                this.Columns.Add("BudgetCodeApprovedAmount8", typeof(decimal));
-                this.Columns.Add("BudgetCodeCenter8", typeof(string));
-                this.Columns.Add("EndDBudgetCodeProject8", typeof(string));
-
-
-                this.Columns.Add("TotalApprovedAmount", typeof(decimal));
-                this.Columns.Add("PlaceOfWorkCode", typeof(string));
+                this.Columns.Add("NO_CMPT18", typeof(string));
+                this.Columns.Add("MNT8", typeof(decimal));
+                this.Columns.Add("CNTRE_PRJT8", typeof(string));
+                this.Columns.Add("NO_PRJT8", typeof(string));               
             }
         }
         internal class GricsPaieGRHDataTable : DataTable
@@ -163,94 +164,172 @@ namespace Clevr_CSV_Converter
             }
         }
 
+        //private ClevrDataTable clevrDT;
+
         public CSVConverter() 
         { 
         
         }
 
-        private void InitDataTable()
-        {
-            clevrDataTable.Columns.Add("EmployeeID", typeof(string));
-            //    public string EmployeeID;
-            //public string JobCode;
-            //public DateTime BeginDate;
-            //public DateTime EndDate;
-            //public string BudgetCode1;
-            //public decimal BudgetCodeApprovedAmount1;
-            //public string BudgetCodeCenter1;
-            //public string BudgetCodeProject1;
-            //public string BudgetCode2;
-            //public decimal BudgetCodeApprovedAmount2;
-            //public string BudgetCodeCenter2;
-            //public string BudgetCodeProject2;
-            //public string BudgetCode3;
-            //public decimal BudgetCodeApprovedAmount3;
-            //public string BudgetCodeCenter3;
-            //public string BudgetCodeProject3;
-            //public string BudgetCode4;
-            //public decimal BudgetCodeApprovedAmount4;
-            //public string BudgetCodeCenter4;
-            //public string BudgetCodeProject4;
-            //public string BudgetCode5;
-            //public decimal BudgetCodeApprovedAmount5;
-            //public string BudgetCodeCenter5;
-            //public string BudgetCodeProject5;
-            //public string BudgetCode6;
-            //public decimal BudgetCodeApprovedAmount6;
-            //public string BudgetCodeCenter6;
-            //public string BudgetCodeProject6;
-            //public string BudgetCode7;
-            //public decimal BudgetCodeApprovedAmount7;
-            //public string BudgetCodeCenter7;
-            //public string BudgetCodeProject7;
-            //public string BudgetCode8;
-            //public decimal BudgetCodeApprovedAmount8;
-            //public string BudgetCodeCenter8;
-            //public string BudgetCodeProject8;
-            //public decimal TotalApprovedAmount;
-            //public string PlaceOfWorkCode;
+        //private void InitDataTable()
+        //{
+        //    clevrDT.Columns.Add("EmployeeID", typeof(string));
+        //    //    public string EmployeeID;
+        //    //public string JobCode;
+        //    //public DateTime BeginDate;
+        //    //public DateTime EndDate;
+        //    //public string BudgetCode1;
+        //    //public decimal BudgetCodeApprovedAmount1;
+        //    //public string BudgetCodeCenter1;
+        //    //public string BudgetCodeProject1;
+        //    //public string BudgetCode2;
+        //    //public decimal BudgetCodeApprovedAmount2;
+        //    //public string BudgetCodeCenter2;
+        //    //public string BudgetCodeProject2;
+        //    //public string BudgetCode3;
+        //    //public decimal BudgetCodeApprovedAmount3;
+        //    //public string BudgetCodeCenter3;
+        //    //public string BudgetCodeProject3;
+        //    //public string BudgetCode4;
+        //    //public decimal BudgetCodeApprovedAmount4;
+        //    //public string BudgetCodeCenter4;
+        //    //public string BudgetCodeProject4;
+        //    //public string BudgetCode5;
+        //    //public decimal BudgetCodeApprovedAmount5;
+        //    //public string BudgetCodeCenter5;
+        //    //public string BudgetCodeProject5;
+        //    //public string BudgetCode6;
+        //    //public decimal BudgetCodeApprovedAmount6;
+        //    //public string BudgetCodeCenter6;
+        //    //public string BudgetCodeProject6;
+        //    //public string BudgetCode7;
+        //    //public decimal BudgetCodeApprovedAmount7;
+        //    //public string BudgetCodeCenter7;
+        //    //public string BudgetCodeProject7;
+        //    //public string BudgetCode8;
+        //    //public decimal BudgetCodeApprovedAmount8;
+        //    //public string BudgetCodeCenter8;
+        //    //public string BudgetCodeProject8;
+        //    //public decimal TotalApprovedAmount;
+        //    //public string PlaceOfWorkCode;
 
 
-        }
+        //}
 
         public static void Convert(string sourcePath, string destinationPath )
         {
-            TextFieldParser parser = new(sourcePath);
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(",");
-            String[] currentRow;
-            String[] columnName;
-
-            //Read first row to get columns names
-            if(!parser.EndOfData)
+            using (ClevrDataTable clevrDataTable = new())
+            using (GricsPaieGRHDataTable gricsDataTable = new())
             {
-                try
+    // Use OLEDB to read CSV file and import it in DataTable
+                bool isFirstRowHeader = true;
+                string header = isFirstRowHeader ? "Yes" : "No";
+
+                string pathOnly = Path.GetDirectoryName(sourcePath);
+                string fileName = Path.GetFileName(sourcePath);
+
+                string sql = @"SELECT * FROM [" + fileName + "]";
+
+                using (OleDbConnection connection = new OleDbConnection(
+                          @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
+                          ";Extended Properties=\"Text;HDR=" + header + "\""))
+                using (OleDbCommand command = new OleDbCommand(sql, connection))
+                using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
                 {
-                    columnName = parser.ReadFields();
+
+                    clevrDataTable.Locale = CultureInfo.CurrentCulture;
+                    adapter.Fill(clevrDataTable);                
                 }
-                catch (MalformedLineException ex)
+
+                // Transfer information to GricsPaieGRHDataTable            
+                foreach(DataRow row in clevrDataTable.Rows)
                 {
-                    MessageBox.Show(ex.ToString());
+                    // For each Budget code, create a new transaction row in GricsPaieGRHDataTable
+                    for(int n = 1; n<9;n++)
+                    {
+                        // If Budget code exist, create transaction
+                        string? v = row["NO_CMPT" + n.ToString()].ToString();
+                        if (v is not null)
+                        {
+                            DataRow newRow = gricsDataTable.NewRow();
+                            newRow["Matr"] = row["MATR"];
+
+                            newRow["NoSEQ"] = n.ToString();
+                            newRow["CodePmnt"] = "'302005";
+                            newRow["RefEmpl"] = row["REF_EMPL"].ToString().Substring(0, 1);
+                            object dateDeb = row["DATE_DEB"];
+                            newRow["DateDeb"] = DateTime.ParseExact((string)dateDeb, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                            object dateFin = row["DATE_FIN"];
+                            newRow["DateFin"] = DateTime.ParseExact((string)dateFin, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                            newRow["Mode"] = String.Empty;
+                            newRow["NbUnit"] = 0;
+                            newRow["MntUnit"] = 0;
+                            newRow["Mnt"] = row["MNT" + n.ToString()];
+                            newRow["NoCmpt"] = row["NO_CMPT" + n.ToString()].ToString().Trim('-');
+                            newRow["LieuTrav"] = String.Concat("'", row["LIEU_TRAV"].ToString());
+                            newRow["Prov"] = "S";
+                            newRow["Note"] = String.Empty ;
+                            newRow["CodeUtil"] = "'AUCLAIRY";
+                            newRow["NoTypePmnt"] = 0;
+                            newRow["CntrePrjt"] = row["CNTRE_PRJT" + n.ToString()];
+                            newRow["NoPrjt"] = row["NO_PRJT" + n.ToString()];
+                            newRow["DateTX"] = DateTime.Now.ToString("yyyy-MM-dd");
+                            newRow["TypeTX"] = "I";
+                            newRow["Statut"] = "0";
+
+                            gricsDataTable.Rows.Add(newRow);
+                        }
+                    }
+                
+                }
+
+                //Export GricsDataTable to CSV
+                gricsDataTable.ToCSV(destinationPath);      
+            }       
+        }
+
+    }
+    public static class CSVUtility
+    {
+        public static void ToCSV(this DataTable dtDataTable, string strFilePath)
+        {
+            StreamWriter sw = new StreamWriter(strFilePath, false);
+            //headers    
+            for (int i = 0; i < dtDataTable.Columns.Count; i++)
+            {
+                sw.Write(dtDataTable.Columns[i]);
+                if (i < dtDataTable.Columns.Count - 1)
+                {
+                    sw.Write(",");
                 }
             }
-            while (!parser.EndOfData)
+            sw.Write(sw.NewLine);
+            foreach (DataRow dr in dtDataTable.Rows)
             {
-                try
+                for (int i = 0; i < dtDataTable.Columns.Count; i++)
                 {
-                    currentRow = parser.ReadFields();  
-                    for(int col = 0; col < currentRow.Count();col++)
+                    if (!Convert.IsDBNull(dr[i]))
                     {
-
+                        string value = dr[i].ToString();
+                        if (value.Contains(','))
+                        {
+                            value = String.Format("\"{0}\"", value);
+                            sw.Write(value);
+                        }
+                        else
+                        {
+                            sw.Write(dr[i].ToString());
+                        }
+                    }
+                    if (i < dtDataTable.Columns.Count - 1)
+                    {
+                        sw.Write(",");
                     }
                 }
-                catch( MalformedLineException ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-
+                sw.Write(sw.NewLine);
             }
-
-            
+            sw.Close();
         }
     }
+
 }
