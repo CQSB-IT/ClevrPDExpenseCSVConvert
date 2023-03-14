@@ -219,81 +219,80 @@ namespace Clevr_CSV_Converter
         public static void Convert(string sourcePath, string destinationPath )
         {
             using (ClevrDataTable clevrDataTable = new())
-            using (GricsPaieGRHDataTable gricsDataTable = new())
             {
-    // Use OLEDB to read CSV file and import it in DataTable
-                bool isFirstRowHeader = true;
-                string header = isFirstRowHeader ? "Yes" : "No";
-
-                string pathOnly = Path.GetDirectoryName(sourcePath);
-                string fileName = Path.GetFileName(sourcePath);
-
-                string sql = @"SELECT * FROM [" + fileName + "]";
-
-                using (OleDbConnection connection = new OleDbConnection(
-                          @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
-                          ";Extended Properties=\"Text;HDR=" + header + "\""))
-                using (OleDbCommand command = new OleDbCommand(sql, connection))
-                using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
+                using (GricsPaieGRHDataTable gricsDataTable = new())
                 {
+                    // Use OLEDB to read CSV file and import it in DataTable
+                    bool isFirstRowHeader = true;
+                    string header = isFirstRowHeader ? "Yes" : "No";
 
-                    clevrDataTable.Locale = CultureInfo.CurrentCulture;
-                    adapter.Fill(clevrDataTable);                
-                }
+                    string pathOnly = Path.GetDirectoryName(sourcePath);
+                    string fileName = Path.GetFileName(sourcePath);
 
-                // Transfer information to GricsPaieGRHDataTable            
-                foreach(DataRow row in clevrDataTable.Rows)
-                {
-                    // For each Budget code, create a new transaction row in GricsPaieGRHDataTable
-                    for(int n = 1; n<9;n++)
+                    string sql = @"SELECT * FROM [" + fileName + "]";
+
+                    using (OleDbConnection connection = new OleDbConnection(
+                              @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
+                              ";Extended Properties=\"Text;HDR=" + header + "\""))
+                    using (OleDbCommand command = new(sql, connection))
+                    using (OleDbDataAdapter adapter = new(command))
                     {
-                        // If Budget code exist, create transaction
-                        string? v = row["NO_CMPT" + n.ToString()].ToString();
-                        if (v is not null)
+
+                        clevrDataTable.Locale = CultureInfo.CurrentCulture;
+                        adapter.Fill(clevrDataTable);
+                    }
+
+                    // Transfer information to GricsPaieGRHDataTable            
+                    foreach (DataRow row in clevrDataTable.Rows)
+                    {
+                        // For each Budget code, create a new transaction row in GricsPaieGRHDataTable
+                        for (int n = 1; n < 9; n++)
                         {
-                            DataRow newRow = gricsDataTable.NewRow();
-                            newRow["Matr"] = row["MATR"];
+                            // If Budget code exist, create transaction
+                            string? v = row["NO_CMPT" + n.ToString()].ToString();
+                            if (v is not null)
+                            {
+                                DataRow newRow = gricsDataTable.NewRow();
+                                newRow["Matr"] = row["MATR"];
 
-                            newRow["NoSEQ"] = n.ToString();
-                            newRow["CodePmnt"] = "'302005";
-                            newRow["RefEmpl"] = row["REF_EMPL"].ToString().Substring(0, 1);
-                            object dateDeb = row["DATE_DEB"];
-                            newRow["DateDeb"] = DateTime.ParseExact((string)dateDeb, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                            object dateFin = row["DATE_FIN"];
-                            newRow["DateFin"] = DateTime.ParseExact((string)dateFin, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                            newRow["Mode"] = String.Empty;
-                            newRow["NbUnit"] = 0;
-                            newRow["MntUnit"] = 0;
-                            newRow["Mnt"] = row["MNT" + n.ToString()];
-                            newRow["NoCmpt"] = row["NO_CMPT" + n.ToString()].ToString().Trim('-');
-                            newRow["LieuTrav"] = String.Concat("'", row["LIEU_TRAV"].ToString());
-                            newRow["Prov"] = "S";
-                            newRow["Note"] = String.Empty ;
-                            newRow["CodeUtil"] = "'AUCLAIRY";
-                            newRow["NoTypePmnt"] = 0;
-                            newRow["CntrePrjt"] = row["CNTRE_PRJT" + n.ToString()];
-                            newRow["NoPrjt"] = row["NO_PRJT" + n.ToString()];
-                            newRow["DateTX"] = DateTime.Now.ToString("yyyy-MM-dd");
-                            newRow["TypeTX"] = "I";
-                            newRow["Statut"] = "0";
+                                newRow["NoSEQ"] = n.ToString();
+                                newRow["CodePmnt"] = "'302005";
+                                newRow["RefEmpl"] = row["REF_EMPL"].ToString().Substring(0, 1);
+                                object dateDeb = row["DATE_DEB"];
+                                newRow["DateDeb"] = DateTime.ParseExact((string)dateDeb, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                                object dateFin = row["DATE_FIN"];
+                                newRow["DateFin"] = DateTime.ParseExact((string)dateFin, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                                newRow["Mode"] = String.Empty;
+                                newRow["NbUnit"] = 0;
+                                newRow["MntUnit"] = 0;
+                                newRow["Mnt"] = row["MNT" + n.ToString()];
+                                newRow["NoCmpt"] = row["NO_CMPT" + n.ToString()].ToString().Trim('-');
+                                newRow["LieuTrav"] = String.Concat("'", row["LIEU_TRAV"].ToString());
+                                newRow["Prov"] = "S";
+                                newRow["Note"] = String.Empty;
+                                newRow["CodeUtil"] = "'AUCLAIRY";
+                                newRow["NoTypePmnt"] = 0;
+                                newRow["CntrePrjt"] = row["CNTRE_PRJT" + n.ToString()];
+                                newRow["NoPrjt"] = row["NO_PRJT" + n.ToString()];
+                                newRow["DateTX"] = DateTime.Now.ToString("yyyy-MM-dd");
+                                newRow["TypeTX"] = "I";
+                                newRow["Statut"] = "0";
 
-                            gricsDataTable.Rows.Add(newRow);
+                                gricsDataTable.Rows.Add(newRow);
+                            }
                         }
                     }
-                
+                    //Export GricsDataTable to CSV
+                    gricsDataTable.ToCSV(destinationPath);
                 }
-
-                //Export GricsDataTable to CSV
-                gricsDataTable.ToCSV(destinationPath);      
-            }       
+            }
         }
-
     }
     public static class CSVUtility
     {
         public static void ToCSV(this DataTable dtDataTable, string strFilePath)
         {
-            StreamWriter sw = new StreamWriter(strFilePath, false);
+            StreamWriter sw = new(strFilePath, false);
             //headers    
             for (int i = 0; i < dtDataTable.Columns.Count; i++)
             {
