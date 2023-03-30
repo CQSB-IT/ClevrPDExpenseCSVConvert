@@ -7,6 +7,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Clevr_CSV_Converter.CSVConverter;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Clevr_CSV_Converter
 {
@@ -93,7 +95,6 @@ namespace Clevr_CSV_Converter
                 this.Columns.Add("DATE_FIN", typeof(DateTime));
                 this.Columns.Add("LIEU_TRAV", typeof(string));
                 this.Columns.Add("PDRequest", typeof(string));
-                this.Columns.Add("LIEU_TRAV", typeof(string));
 
                 this.Columns.Add("NO_CMPT1", typeof(string));
                 this.Columns.Add("MNT1", typeof(decimal));
@@ -140,27 +141,27 @@ namespace Clevr_CSV_Converter
         {
             public GricsPaieGRHDataTable()
             {
-                this.Columns.Add("Matr", typeof(string));
-                this.Columns.Add("NoSEQ", typeof(int));
-                this.Columns.Add("CodePmnt", typeof(string));
-                this.Columns.Add("RefEmpl", typeof(string));
-                this.Columns.Add("DateDeb", typeof(DateTime));
-                this.Columns.Add("DateFin", typeof(DateTime));
-                this.Columns.Add("Mode", typeof(string));
-                this.Columns.Add("NbUnit", typeof(decimal));
-                this.Columns.Add("MntUnit", typeof(decimal));
-                this.Columns.Add("Mnt", typeof(decimal));
-                this.Columns.Add("NoCmpt", typeof(string));
-                this.Columns.Add("LieuTrav", typeof(string));
-                this.Columns.Add("Prov", typeof(string));
-                this.Columns.Add("Note", typeof(string));
-                this.Columns.Add("CodeUtil", typeof(string));
-                this.Columns.Add("NoTypePmnt", typeof(int));
-                this.Columns.Add("CntrePrjt", typeof(string));
-                this.Columns.Add("NoPrjt", typeof(string));
-                this.Columns.Add("DateTX", typeof(DateTime));
-                this.Columns.Add("TypeTX", typeof(string));
-                this.Columns.Add("Statut", typeof(int));
+                this.Columns.Add("MATR", typeof(string));
+                this.Columns.Add("NO_SEQ", typeof(string));
+                this.Columns.Add("CODE_PMNT", typeof(string));
+                this.Columns.Add("REF_EMPL", typeof(string));
+                this.Columns.Add("DATE_DEB", typeof(string));
+                this.Columns.Add("DATE_FIN", typeof(string));
+                this.Columns.Add("MODE", typeof(string));
+                this.Columns.Add("NB_UNIT", typeof(decimal));
+                this.Columns.Add("MNT_UNIT", typeof(decimal));
+                this.Columns.Add("MNT", typeof(decimal));
+                this.Columns.Add("NO_CMPT", typeof(string));
+                this.Columns.Add("LIEU_TRAV", typeof(string));
+                this.Columns.Add("PROV", typeof(string));
+                this.Columns.Add("NOTE", typeof(string));
+                this.Columns.Add("CODE_UTIL", typeof(string));
+                this.Columns.Add("NO_TYPE_PMNT", typeof(int));
+                this.Columns.Add("CNTRE_PRJT", typeof(string));
+                this.Columns.Add("NO_PRJT", typeof(string));
+                this.Columns.Add("DATE_TX", typeof(string));
+                this.Columns.Add("TYPE_TX", typeof(string));
+                this.Columns.Add("STATUT", typeof(int));
             }
         }
 
@@ -169,128 +170,126 @@ namespace Clevr_CSV_Converter
         public CSVConverter() 
         { 
         
-        }
+        }       
 
-        //private void InitDataTable()
-        //{
-        //    clevrDT.Columns.Add("EmployeeID", typeof(string));
-        //    //    public string EmployeeID;
-        //    //public string JobCode;
-        //    //public DateTime BeginDate;
-        //    //public DateTime EndDate;
-        //    //public string BudgetCode1;
-        //    //public decimal BudgetCodeApprovedAmount1;
-        //    //public string BudgetCodeCenter1;
-        //    //public string BudgetCodeProject1;
-        //    //public string BudgetCode2;
-        //    //public decimal BudgetCodeApprovedAmount2;
-        //    //public string BudgetCodeCenter2;
-        //    //public string BudgetCodeProject2;
-        //    //public string BudgetCode3;
-        //    //public decimal BudgetCodeApprovedAmount3;
-        //    //public string BudgetCodeCenter3;
-        //    //public string BudgetCodeProject3;
-        //    //public string BudgetCode4;
-        //    //public decimal BudgetCodeApprovedAmount4;
-        //    //public string BudgetCodeCenter4;
-        //    //public string BudgetCodeProject4;
-        //    //public string BudgetCode5;
-        //    //public decimal BudgetCodeApprovedAmount5;
-        //    //public string BudgetCodeCenter5;
-        //    //public string BudgetCodeProject5;
-        //    //public string BudgetCode6;
-        //    //public decimal BudgetCodeApprovedAmount6;
-        //    //public string BudgetCodeCenter6;
-        //    //public string BudgetCodeProject6;
-        //    //public string BudgetCode7;
-        //    //public decimal BudgetCodeApprovedAmount7;
-        //    //public string BudgetCodeCenter7;
-        //    //public string BudgetCodeProject7;
-        //    //public string BudgetCode8;
-        //    //public decimal BudgetCodeApprovedAmount8;
-        //    //public string BudgetCodeCenter8;
-        //    //public string BudgetCodeProject8;
-        //    //public decimal TotalApprovedAmount;
-        //    //public string PlaceOfWorkCode;
-
-
-        //}
-
-        public static void Convert(string sourcePath, string destinationPath )
+        public static ClevrDataTable ReadClevrCSV(string clevrCSVPath)
         {
             using (ClevrDataTable clevrDataTable = new())
             {
-                using (GricsPaieGRHDataTable gricsDataTable = new())
+                // Use OLEDB to read CSV file and import it in DataTable
+                bool isFirstRowHeader = true;
+                string header = isFirstRowHeader ? "Yes" : "No";
+
+                string pathOnly = Path.GetDirectoryName(clevrCSVPath);
+                string fileName = Path.GetFileName(clevrCSVPath);
+
+                string sql = @"SELECT * FROM [" + fileName + "]";
+
+                using (OleDbConnection connection = new OleDbConnection(
+                            @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + pathOnly +
+                            ";Extended Properties=\"Text;HDR=" + header + "\""))
+
+                //Microsoft.Jet.OLEDB.4.0
+                using (OleDbCommand command = new(sql, connection))
+                using (OleDbDataAdapter adapter = new(command))
                 {
-                    // Use OLEDB to read CSV file and import it in DataTable
-                    bool isFirstRowHeader = true;
-                    string header = isFirstRowHeader ? "Yes" : "No";
 
-                    string pathOnly = Path.GetDirectoryName(sourcePath);
-                    string fileName = Path.GetFileName(sourcePath);
-
-                    string sql = @"SELECT * FROM [" + fileName + "]";
-
-                    using (OleDbConnection connection = new OleDbConnection(
-                              @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
-                              ";Extended Properties=\"Text;HDR=" + header + "\""))
-                    using (OleDbCommand command = new(sql, connection))
-                    using (OleDbDataAdapter adapter = new(command))
-                    {
-
-                        clevrDataTable.Locale = CultureInfo.CurrentCulture;
-                        adapter.Fill(clevrDataTable);
-                    }
-
-                    // Transfer information to GricsPaieGRHDataTable            
-                    foreach (DataRow row in clevrDataTable.Rows)
-                    {
-                        // For each Budget code, create a new transaction row in GricsPaieGRHDataTable
-                        for (int n = 1; n < 9; n++)
-                        {
-                            // If Budget code exist, create transaction
-                            string? v = row["NO_CMPT" + n.ToString()].ToString();
-                            if (v is not null)
-                            {
-                                DataRow newRow = gricsDataTable.NewRow();
-                                newRow["Matr"] = row["MATR"];
-
-                                newRow["NoSEQ"] = n.ToString();
-                                newRow["CodePmnt"] = "'302005";
-                                newRow["RefEmpl"] = row["REF_EMPL"].ToString().Substring(0, 1);
-                                object dateDeb = row["DATE_DEB"];
-                                newRow["DateDeb"] = DateTime.ParseExact((string)dateDeb, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                                object dateFin = row["DATE_FIN"];
-                                newRow["DateFin"] = DateTime.ParseExact((string)dateFin, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                                newRow["Mode"] = String.Empty;
-                                newRow["NbUnit"] = 0;
-                                newRow["MntUnit"] = 0;
-                                newRow["Mnt"] = row["MNT" + n.ToString()];
-                                newRow["NoCmpt"] = row["NO_CMPT" + n.ToString()].ToString().Trim('-');
-                                newRow["LieuTrav"] = String.Concat("'", row["LIEU_TRAV"].ToString());
-                                newRow["Prov"] = "S";
-                                newRow["Note"] = String.Empty;
-                                newRow["CodeUtil"] = "'AUCLAIRY";
-                                newRow["NoTypePmnt"] = 0;
-                                newRow["CntrePrjt"] = row["CNTRE_PRJT" + n.ToString()];
-                                newRow["NoPrjt"] = row["NO_PRJT" + n.ToString()];
-                                newRow["DateTX"] = DateTime.Now.ToString("yyyy-MM-dd");
-                                newRow["TypeTX"] = "I";
-                                newRow["Statut"] = "0";
-
-                                gricsDataTable.Rows.Add(newRow);
-                            }
-                        }
-                    }
-                    //Export GricsDataTable to CSV
-                    gricsDataTable.ToCSV(destinationPath);
+                    clevrDataTable.Locale = CultureInfo.CurrentCulture;
+                    adapter.Fill(clevrDataTable);
                 }
+                return clevrDataTable;
+             }
+        }
+
+        public static GricsPaieGRHDataTable FillGricsPaieGRHDataTable(ClevrDataTable clevrDataTable)
+        {   
+            GricsPaieGRHDataTable paieGRHDataTable = new GricsPaieGRHDataTable();
+
+            // Transfer information to GricsPaieGRHDataTable            
+            foreach (DataRow row in clevrDataTable.Rows)
+            {
+                // For each Budget code, create a new transaction row in GricsPaieGRHDataTable
+                // All non empty string must begin by ' in the destination CSV
+                for (int n = 1; n < 9; n++)
+                {
+                    // If Budget code exist, create transaction
+                    string? v = row["NO_CMPT" + n.ToString()].ToString();
+                    if (!string.IsNullOrEmpty(v))
+                    {
+                        DataRow newRow = paieGRHDataTable.NewRow();
+                        newRow["MATR"] = string.Concat("'",row["MATR"]);
+                        newRow["NO_SEQ"] = String.Empty;// Must stay empty for importation
+                        newRow["CODE_PMNT"] = "'302005";
+                        newRow["REF_EMPL"] = row["REF_EMPL"].ToString().Substring(0, 1);// Only the letter linked to job reference
+                        newRow["DATE_DEB"] = ((DateTime)row["DATE_DEB"]).ToString("yyyy-MM-dd");
+                        newRow["DATE_FIN"] = ((DateTime)row["DATE_FIN"]).ToString("yyyy-MM-dd");
+                        newRow["MODE"] = String.Empty;
+                        newRow["NB_UNIT"] = 0;
+                        newRow["MNT_UNIT"] = 0;
+                        newRow["MNT"] = row["MNT" + n.ToString()];//MNT1 to MNT8
+                        newRow["NO_CMPT"] = (row["NO_CMPT" + n.ToString()].ToString()).Replace("-","");//NO_CMPT1 to NO_CMPT8
+                        int lieuTrav;
+                        int.TryParse(row["LIEU_TRAV"].ToString(), out lieuTrav);
+                        newRow["LIEU_TRAV"] = string.Format("'{0,3:D3}", lieuTrav);                        
+                        newRow["PROV"] = "S";// TODO: To verify if it is the good code
+                        newRow["NOTE"] = String.Empty;
+                        newRow["CODE_UTIL"] = "'AUCLAIRY";// TODO: Determine if this must be an existing user code in Paie et GRH
+                        newRow["NO_TYPE_PMNT"] = 0;
+                        newRow["CNTRE_PRJT"] = row["CNTRE_PRJT" + n.ToString()];// CNTRE_PRJT1 to CNTRE_PRJT8
+                        newRow["NO_PRJT"] = row["NO_PRJT" + n.ToString()];// NO_PRJT1 to NO_PRJT8
+                        newRow["DATE_TX"] = DateTime.Now.ToString("yyyy-MM-dd");
+                        newRow["TYPE_TX"] = "I";
+                        newRow["STATUT"] = "0";
+                        paieGRHDataTable.Rows.Add(newRow);
+                    }
+                }
+            }
+            return paieGRHDataTable;
+        }
+
+        public static void Convert(string sourcePath, string destinationPath )
+        {
+            using (ClevrDataTable clevrDataTable = ReadClevrCSV(sourcePath))
+            {
+                using (GricsPaieGRHDataTable gricsDataTable = FillGricsPaieGRHDataTable(clevrDataTable))
+                {
+                    //Export GricsDataTable to CSV
+                    gricsDataTable.ToCSV(destinationPath,';');
+                }
+            }
+        }
+
+        public static bool CompareExportedCSVToPaieGRHPaiement(string sourcePath)
+        {
+            string query = "";
+            using (OleDbConnection conPaieGRH = new OleDbConnection(@"Provider=sqloledb;Data Source=sql.cqsb.board\sql;Initial Catalog=myDataBase;Integrated Security=SSPI;"))
+            using (OleDbCommand cmdPaieGRH = new(query, conPaieGRH))
+            using (OleDbDataAdapter adaptPaieGRH = new(cmdPaieGRH))
+            using (ClevrDataTable clevr = ReadClevrCSV(sourcePath))// Read Clevr CSV file
+            using (GricsPaieGRHDataTable clevrConverted = FillGricsPaieGRHDataTable(clevr)) // Convert Clevr CSV to Paie et GRH format
+            using (GricsPaieGRHDataTable paymentsForPaieGRH = new())
+            {
+                adaptPaieGRH.Fill(paymentsForPaieGRH);
+                // Validate if both datatables have the same rows and columns count
+                if (clevrConverted.Rows.Count != paymentsForPaieGRH.Rows.Count || clevrConverted.Columns.Count != paymentsForPaieGRH.Columns.Count)
+                    return false;
+
+                // Validate that each column of each row has the same value in both datatable
+                for (int i = 0; i < clevrConverted.Rows.Count; i++)
+                {
+                    for (int c = 0; c < clevrConverted.Columns.Count; c++)
+                    {
+                        if (!Equals(clevrConverted.Rows[i][c], paymentsForPaieGRH.Rows[i][c]))
+                            return false;
+                    }
+                }
+                return true;
             }
         }
     }
     public static class CSVUtility
     {
-        public static void ToCSV(this DataTable dtDataTable, string strFilePath)
+        public static void ToCSV(this DataTable dtDataTable, string strFilePath, char cSeparator=',')
         {
             StreamWriter sw = new(strFilePath, false);
             //headers    
@@ -299,7 +298,7 @@ namespace Clevr_CSV_Converter
                 sw.Write(dtDataTable.Columns[i]);
                 if (i < dtDataTable.Columns.Count - 1)
                 {
-                    sw.Write(",");
+                    sw.Write(cSeparator);
                 }
             }
             sw.Write(sw.NewLine);
@@ -307,10 +306,10 @@ namespace Clevr_CSV_Converter
             {
                 for (int i = 0; i < dtDataTable.Columns.Count; i++)
                 {
-                    if (!Convert.IsDBNull(dr[i]))
+                    if (!System.Convert.IsDBNull(dr[i]))
                     {
                         string value = dr[i].ToString();
-                        if (value.Contains(','))
+                        if (value.Contains(cSeparator))
                         {
                             value = String.Format("\"{0}\"", value);
                             sw.Write(value);
@@ -322,7 +321,7 @@ namespace Clevr_CSV_Converter
                     }
                     if (i < dtDataTable.Columns.Count - 1)
                     {
-                        sw.Write(",");
+                        sw.Write(cSeparator);
                     }
                 }
                 sw.Write(sw.NewLine);
