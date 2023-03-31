@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.btnConvert = new System.Windows.Forms.Button();
+            this.convertBtnResult = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnConvert
@@ -41,20 +42,31 @@
             this.btnConvert.UseVisualStyleBackColor = true;
             this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
             // 
+            // convertBtnResult
+            // 
+            this.convertBtnResult.AutoSize = true;
+            this.convertBtnResult.Location = new System.Drawing.Point(268, 236);
+            this.convertBtnResult.Name = "convertBtnResult";
+            this.convertBtnResult.Size = new System.Drawing.Size(0, 15);
+            this.convertBtnResult.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.convertBtnResult);
             this.Controls.Add(this.btnConvert);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private Button btnConvert;
+        private Label convertBtnResult;
     }
 }
