@@ -5,6 +5,8 @@ using System.Data;
 using System.Data.OleDb;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using static Clevr_CSV_Converter.CSVConverter;
@@ -12,6 +14,21 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Clevr_CSV_Converter
 {
+    class ClevrDataException : Exception
+    {
+        private List<string> errors;
+        public ClevrDataException() 
+        { 
+            errors = new List<string>();
+        }
+
+        public ClevrDataException(List<string> errors)
+        {
+            this.errors = errors;
+        }
+        public List<string> GetErrors()
+        { return this.errors; }
+    }
     internal class CSVConverter
     {
         struct ClevrCSV
@@ -170,7 +187,71 @@ namespace Clevr_CSV_Converter
         public CSVConverter() 
         { 
         
-        }       
+        }
+
+        public static List<string> ValidateClevrData(ClevrDataTable clevrDataTable)
+        {
+            bool result = true;
+            List<string> errors = new List<string>();
+            // Transfer information to GricsPaieGRHDataTable            
+            foreach (DataRow row in clevrDataTable.Rows)
+            {
+                if (row["MATR"] == DBNull.Value)
+                {
+                    errors.Add("MATR");
+                    result = false;
+                }
+                for(int n = 1;n< 9;n++)
+                {
+                    // We validate NO_CMPT, CNTRE_PRJt and NO_PRJT only if MNT is not DBNull.  If DBNull, we go to the next row
+                    if (row[$"MNT{n}"] != DBNull.Value)
+                    {
+                        //if (row[$"NO_CMPT{n}"] == DBNull.Value)
+                        //{
+                        //    errors.Add($"NO_CMPT{n}");
+                        //    result = false;
+                        //}
+
+                        //if (row[$"CNTRE_PRJT{n}"] == DBNull.Value)
+                        //{
+                        //    errors.Add($"CNTRE_PRJT{n}");
+                        //    result = false;
+                        //}
+                        //if (row[$"NO_PRJT{n}"] == DBNull.Value)
+                        //{
+                        //    errors.Add($"NO_PRJT{n}");
+                        //    result = false;
+                        //}
+                    }               
+                }
+                
+
+                if (row["REF_EMPL"] == DBNull.Value)
+                {
+                    errors.Add("REF_EMPL");
+                    result = false;
+                }
+
+                if (row["DATE_DEB"] == DBNull.Value)
+                {
+                    errors.Add("DATE_DEB");
+                    result = false;
+                }
+                if (row["DATE_FIN"] == DBNull.Value)
+                {
+                    errors.Add("DATE_FIN");
+                    result = false;
+                }
+
+                int lieuTrav;
+                if (!int.TryParse(row["LIEU_TRAV"].ToString(), out lieuTrav))
+                {
+                    errors.Add("LIEU_TRAV");
+                    result = false;
+                }
+            }
+            return errors;
+        }
 
         public static ClevrDataTable ReadClevrCSV(string clevrCSVPath)
         {
@@ -203,6 +284,11 @@ namespace Clevr_CSV_Converter
 
         public static GricsPaieGRHDataTable FillGricsPaieGRHDataTable(ClevrDataTable clevrDataTable)
         {   
+            // If ClevrDataTable value are not valid for what we need, throw an exception
+            List<string> error = ValidateClevrData(clevrDataTable);
+            if (error.Count > 0)
+                throw new ClevrDataException(error);
+
             GricsPaieGRHDataTable paieGRHDataTable = new GricsPaieGRHDataTable();
 
             // Transfer information to GricsPaieGRHDataTable            
@@ -216,6 +302,7 @@ namespace Clevr_CSV_Converter
                     string? v = row["NO_CMPT" + n.ToString()].ToString();
                     if (!string.IsNullOrEmpty(v))
                     {
+                        //TODO: Add validation for empty values
                         DataRow newRow = paieGRHDataTable.NewRow();
                         newRow["MATR"] = string.Concat("'",row["MATR"]);
                         newRow["NO_SEQ"] = String.Empty;// Must stay empty for importation
@@ -233,7 +320,7 @@ namespace Clevr_CSV_Converter
                         newRow["LIEU_TRAV"] = string.Format("'{0,3:D3}", lieuTrav);                        
                         newRow["PROV"] = "S";// TODO: To verify if it is the good code
                         newRow["NOTE"] = String.Empty;
-                        newRow["CODE_UTIL"] = "'AUCLAIRY";// TODO: Determine if this must be an existing user code in Paie et GRH
+                        newRow["CODE_UTIL"] = "'SANtaClauss";// TODO: Determine if this must be an existing user code in Paie et GRH
                         newRow["NO_TYPE_PMNT"] = 0;
                         newRow["CNTRE_PRJT"] = row["CNTRE_PRJT" + n.ToString()];// CNTRE_PRJT1 to CNTRE_PRJT8
                         newRow["NO_PRJT"] = row["NO_PRJT" + n.ToString()];// NO_PRJT1 to NO_PRJT8

@@ -30,6 +30,7 @@
         {
             this.btnConvert = new System.Windows.Forms.Button();
             this.convertBtnResult = new System.Windows.Forms.Label();
+            this.lbLogLink = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // btnConvert
@@ -47,14 +48,27 @@
             this.convertBtnResult.AutoSize = true;
             this.convertBtnResult.Location = new System.Drawing.Point(268, 236);
             this.convertBtnResult.Name = "convertBtnResult";
-            this.convertBtnResult.Size = new System.Drawing.Size(0, 15);
+            this.convertBtnResult.Size = new System.Drawing.Size(71, 15);
             this.convertBtnResult.TabIndex = 1;
+            this.convertBtnResult.Text = "[Result Text]";
+            // 
+            // lbLogLink
+            // 
+            this.lbLogLink.AutoSize = true;
+            this.lbLogLink.Location = new System.Drawing.Point(268, 260);
+            this.lbLogLink.Name = "lbLogLink";
+            this.lbLogLink.Size = new System.Drawing.Size(75, 15);
+            this.lbLogLink.TabIndex = 3;
+            this.lbLogLink.TabStop = true;
+            this.lbLogLink.Text = "[LogFileLink]";
+            this.lbLogLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbLogLink_LinkClicked);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lbLogLink);
             this.Controls.Add(this.convertBtnResult);
             this.Controls.Add(this.btnConvert);
             this.Name = "Form1";
@@ -68,5 +82,6 @@
 
         private Button btnConvert;
         private Label convertBtnResult;
+        private LinkLabel lbLogLink;
     }
 }

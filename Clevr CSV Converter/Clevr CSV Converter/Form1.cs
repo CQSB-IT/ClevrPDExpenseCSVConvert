@@ -3,6 +3,7 @@ namespace Clevr_CSV_Converter
     public partial class Form1 : Form
     {
         private const string LOG_PATH = @".\logs";
+        private string lastErrorFilePath = @"";
 
         public Form1()
         {
@@ -10,6 +11,7 @@ namespace Clevr_CSV_Converter
                 Directory.CreateDirectory(LOG_PATH);
 
             InitializeComponent();
+            ResetLabel();
         }
 
         /// <summary>
@@ -44,6 +46,13 @@ namespace Clevr_CSV_Converter
                 CSVConverter.Convert(sourceFilePath, destinationFilePath);
                 DisplaySuccess("Conversion du fichier CSV réussi!");
             }
+            catch(ClevrDataException clevrEx)
+            {
+                foreach(string error in clevrEx.GetErrors())
+                {
+                    AppendToLog($"Il y a une erreur dans le fichier CSV de Clevr avec la colone{error}");
+                }
+            }
             catch (Exception ex)
             {
                 // Possiblement implémenter une classe pour faire des logs.
@@ -60,7 +69,9 @@ namespace Clevr_CSV_Converter
         /// <returns>The path to the file where the text was appended.</returns>
         private string AppendToLog(string text)
         {
-            string filePath = $@"{LOG_PATH}\{DateTime.Today.Date}.txt";
+            string filePath = $@"{LOG_PATH}\{DateTime.Today.Date.ToString("yyyy-MM-dd HH_mm")}.txt";
+            lastErrorFilePath = Path.GetFullPath( filePath);
+            lbLogLink.Text = "Log file";
             using var writer = File.AppendText(filePath);
             writer.WriteLine(text);
 
@@ -135,6 +146,20 @@ namespace Clevr_CSV_Converter
         {
             convertBtnResult.ForeColor = Color.Black;
             convertBtnResult.Text = string.Empty;
+            lbLogLink.Text = string.Empty;
+            lastErrorFilePath = string.Empty;
+        }
+
+        private void lbLogLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            { 
+                if(!String.IsNullOrEmpty(lastErrorFilePath) )
+                {
+                    System.Diagnostics.Process.Start(@lastErrorFilePath);
+                }                
+            }
+            catch { }            
         }
 
         //public Form1()
