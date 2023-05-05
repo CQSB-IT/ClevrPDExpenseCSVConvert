@@ -29,6 +29,7 @@ namespace Clevr_CSV_Converter
         public List<string> GetErrors()
         { return this.errors; }
     }
+
     internal class CSVConverter
     {
         struct ClevrCSV
@@ -191,7 +192,6 @@ namespace Clevr_CSV_Converter
 
         public static List<string> ValidateClevrData(ClevrDataTable clevrDataTable)
         {
-            bool result = true;
             List<string> errors = new List<string>();
             // Transfer information to GricsPaieGRHDataTable            
             foreach (DataRow row in clevrDataTable.Rows)
@@ -199,7 +199,6 @@ namespace Clevr_CSV_Converter
                 if (row["MATR"] == DBNull.Value)
                 {
                     errors.Add("MATR");
-                    result = false;
                 }
                 for(int n = 1;n< 9;n++)
                 {
@@ -209,18 +208,15 @@ namespace Clevr_CSV_Converter
                         //if (row[$"NO_CMPT{n}"] == DBNull.Value)
                         //{
                         //    errors.Add($"NO_CMPT{n}");
-                        //    result = false;
                         //}
 
                         //if (row[$"CNTRE_PRJT{n}"] == DBNull.Value)
                         //{
                         //    errors.Add($"CNTRE_PRJT{n}");
-                        //    result = false;
                         //}
                         //if (row[$"NO_PRJT{n}"] == DBNull.Value)
                         //{
                         //    errors.Add($"NO_PRJT{n}");
-                        //    result = false;
                         //}
                     }               
                 }
@@ -229,25 +225,21 @@ namespace Clevr_CSV_Converter
                 if (row["REF_EMPL"] == DBNull.Value)
                 {
                     errors.Add("REF_EMPL");
-                    result = false;
                 }
 
                 if (row["DATE_DEB"] == DBNull.Value)
                 {
                     errors.Add("DATE_DEB");
-                    result = false;
                 }
                 if (row["DATE_FIN"] == DBNull.Value)
                 {
                     errors.Add("DATE_FIN");
-                    result = false;
                 }
 
                 int lieuTrav;
                 if (!int.TryParse(row["LIEU_TRAV"].ToString(), out lieuTrav))
                 {
                     errors.Add("LIEU_TRAV");
-                    result = false;
                 }
             }
             return errors;
@@ -282,8 +274,18 @@ namespace Clevr_CSV_Converter
              }
         }
 
-        public static GricsPaieGRHDataTable FillGricsPaieGRHDataTable(ClevrDataTable clevrDataTable)
+        public static GricsPaieGRHDataTable FillGricsPaieGRHDataTable(ClevrDataTable clevrDataTable,string paymentCode, string paieGRHAuthenticationCode)
         {   
+            if(string.IsNullOrWhiteSpace(paymentCode))
+            {
+                throw new ArgumentNullException(nameof(paymentCode));
+            }
+
+            if (string.IsNullOrWhiteSpace(paieGRHAuthenticationCode))
+            {
+                throw new ArgumentNullException(nameof(paieGRHAuthenticationCode));
+            }
+
             // If ClevrDataTable value are not valid for what we need, throw an exception
             List<string> error = ValidateClevrData(clevrDataTable);
             if (error.Count > 0)
@@ -306,7 +308,7 @@ namespace Clevr_CSV_Converter
                         DataRow newRow = paieGRHDataTable.NewRow();
                         newRow["MATR"] = string.Concat("'",row["MATR"]);
                         newRow["NO_SEQ"] = String.Empty;// Must stay empty for importation
-                        newRow["CODE_PMNT"] = "'302005";
+                        newRow["CODE_PMNT"] = $"'{paymentCode}";
                         newRow["REF_EMPL"] = row["REF_EMPL"].ToString().Substring(0, 1);// Only the letter linked to job reference
                         newRow["DATE_DEB"] = ((DateTime)row["DATE_DEB"]).ToString("yyyy-MM-dd");
                         newRow["DATE_FIN"] = ((DateTime)row["DATE_FIN"]).ToString("yyyy-MM-dd");
@@ -320,7 +322,7 @@ namespace Clevr_CSV_Converter
                         newRow["LIEU_TRAV"] = string.Format("'{0,3:D3}", lieuTrav);                        
                         newRow["PROV"] = "S";// TODO: To verify if it is the good code
                         newRow["NOTE"] = String.Empty;
-                        newRow["CODE_UTIL"] = "'SANtaClauss";// TODO: Determine if this must be an existing user code in Paie et GRH
+                        newRow["CODE_UTIL"] = $"'{paieGRHAuthenticationCode}";// TODO: Determine if this must be an existing user code in Paie et GRH
                         newRow["NO_TYPE_PMNT"] = 0;
                         newRow["CNTRE_PRJT"] = row["CNTRE_PRJT" + n.ToString()];// CNTRE_PRJT1 to CNTRE_PRJT8
                         newRow["NO_PRJT"] = row["NO_PRJT" + n.ToString()];// NO_PRJT1 to NO_PRJT8
@@ -334,11 +336,17 @@ namespace Clevr_CSV_Converter
             return paieGRHDataTable;
         }
 
-        public static void Convert(string sourcePath, string destinationPath )
+        public static void Convert(string sourcePath, string destinationPath, string paymentCode, string paieGRHAuthenticationCode)
         {
+            if (string.IsNullOrWhiteSpace(paymentCode))
+                throw new ArgumentNullException(nameof(paymentCode));
+
+            if (string.IsNullOrWhiteSpace(paieGRHAuthenticationCode))
+                throw new ArgumentNullException(nameof(paieGRHAuthenticationCode));
+
             using (ClevrDataTable clevrDataTable = ReadClevrCSV(sourcePath))
             {
-                using (GricsPaieGRHDataTable gricsDataTable = FillGricsPaieGRHDataTable(clevrDataTable))
+                using (GricsPaieGRHDataTable gricsDataTable = FillGricsPaieGRHDataTable(clevrDataTable, paymentCode, paieGRHAuthenticationCode))
                 {
                     //Export GricsDataTable to CSV
                     gricsDataTable.ToCSV(destinationPath,';');
@@ -346,14 +354,17 @@ namespace Clevr_CSV_Converter
             }
         }
 
-        public static bool CompareExportedCSVToPaieGRHPaiement(string sourcePath)
+        public static bool CompareExportedCSVToPaieGRHPaiement(string sourcePath, string paymentCode, string paieGRHAuthenticationCode)
         {
+            if (string.IsNullOrWhiteSpace(paymentCode))
+                throw new ArgumentNullException(nameof(paymentCode));
+
             string query = "";
             using (OleDbConnection conPaieGRH = new OleDbConnection(@"Provider=sqloledb;Data Source=sql.cqsb.board\sql;Initial Catalog=myDataBase;Integrated Security=SSPI;"))
             using (OleDbCommand cmdPaieGRH = new(query, conPaieGRH))
             using (OleDbDataAdapter adaptPaieGRH = new(cmdPaieGRH))
             using (ClevrDataTable clevr = ReadClevrCSV(sourcePath))// Read Clevr CSV file
-            using (GricsPaieGRHDataTable clevrConverted = FillGricsPaieGRHDataTable(clevr)) // Convert Clevr CSV to Paie et GRH format
+            using (GricsPaieGRHDataTable clevrConverted = FillGricsPaieGRHDataTable(clevr, paymentCode, paieGRHAuthenticationCode)) // Convert Clevr CSV to Paie et GRH format
             using (GricsPaieGRHDataTable paymentsForPaieGRH = new())
             {
                 adaptPaieGRH.Fill(paymentsForPaieGRH);

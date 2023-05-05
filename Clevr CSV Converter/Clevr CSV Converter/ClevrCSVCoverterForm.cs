@@ -1,11 +1,11 @@
 namespace Clevr_CSV_Converter
 {
-    public partial class Form1 : Form
+    public partial class ClevrCSVCoverterForm : Form
     {
         private const string LOG_PATH = @".\logs";
         private string lastErrorFilePath = @"";
 
-        public Form1()
+        public ClevrCSVCoverterForm()
         {
             if (!Directory.Exists(LOG_PATH))
                 Directory.CreateDirectory(LOG_PATH);
@@ -23,11 +23,24 @@ namespace Clevr_CSV_Converter
         private void btnConvert_Click(object sender, EventArgs e)
         {
             ResetLabel();
+
+            if (string.IsNullOrEmpty(txtPaieAuthenticationCode.Text))
+            {
+                DisplayError("A payment code is mandatory");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPaymentcode.Text))
+            {
+                DisplayError("A payment code is mandatory");
+                return;
+            }
+
             string? sourceFilePath = GetCsvFilePath();
 
             if (sourceFilePath == null)
             {
-                DisplayError("Sélection de fichier source abortée.");
+                DisplayError("Source file selection aborted.");
                 return;
             }
 
@@ -35,7 +48,7 @@ namespace Clevr_CSV_Converter
 
             if (destinationFilePath == null)
             {
-                DisplayError("Sélection d'emplacement de sauvegarde abortée.");
+                DisplayError("Destination file selection aborted.");
                 return;
             }
 
@@ -43,22 +56,27 @@ namespace Clevr_CSV_Converter
             // Happy path
             try
             {
-                CSVConverter.Convert(sourceFilePath, destinationFilePath);
-                DisplaySuccess("Conversion du fichier CSV réussi!");
+                CSVConverter.Convert(sourceFilePath, destinationFilePath, txtPaymentcode.Text,txtPaieAuthenticationCode.Text);
+                DisplaySuccess("CSV file conversion succeded!");
             }
-            catch(ClevrDataException clevrEx)
+            catch (ClevrDataException clevrEx)
             {
-                foreach(string error in clevrEx.GetErrors())
+                foreach (string error in clevrEx.GetErrors())
                 {
-                    AppendToLog($"Il y a une erreur dans le fichier CSV de Clevr avec la colone{error}");
+                    AppendToLog($"There is an error in Clevr CSV file : {error}");
                 }
+            }
+            catch (ArgumentNullException argEx)
+            {
+                string logFilePath = AppendToLog(argEx.Message);
+                DisplayError($"Error during CSV file convertion. See log file ({logFilePath}) for details.");
             }
             catch (Exception ex)
             {
                 // Possiblement implémenter une classe pour faire des logs.
 
                 string logFilePath = AppendToLog(ex.Message);
-                DisplayError($"Erreur lors de la conversion du fichier CSV. Voir fichier de log ({logFilePath}) pour les détails.");
+                DisplayError($"Error during CSV file convertion. See log file ({logFilePath}) for details.");
             }
         }
 
@@ -70,7 +88,7 @@ namespace Clevr_CSV_Converter
         private string AppendToLog(string text)
         {
             string filePath = $@"{LOG_PATH}\{DateTime.Today.Date.ToString("yyyy-MM-dd HH_mm")}.txt";
-            lastErrorFilePath = Path.GetFullPath( filePath);
+            lastErrorFilePath = Path.GetFullPath(filePath);
             lbLogLink.Text = "Log file";
             using var writer = File.AppendText(filePath);
             writer.WriteLine(text);
@@ -153,13 +171,13 @@ namespace Clevr_CSV_Converter
         private void lbLogLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try
-            { 
-                if(!String.IsNullOrEmpty(lastErrorFilePath) )
+            {
+                if (!String.IsNullOrEmpty(lastErrorFilePath))
                 {
                     System.Diagnostics.Process.Start(@lastErrorFilePath);
-                }                
+                }
             }
-            catch { }            
+            catch { }
         }
 
         //public Form1()
