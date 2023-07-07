@@ -91,6 +91,7 @@
             txtPaieAuthenticationCode.Size = new Size(100, 23);
             txtPaieAuthenticationCode.TabIndex = 7;
             txtPaieAuthenticationCode.Text = "SantaClauss";
+            txtPaieAuthenticationCode.Visible = false;
             // 
             // lbUsernme
             // 
@@ -100,6 +101,7 @@
             lbUsernme.Size = new Size(184, 15);
             lbUsernme.TabIndex = 6;
             lbUsernme.Text = "Paie et GRH authentication code :";
+            lbUsernme.Visible = false;
             // 
             // ClevrCSVCoverterForm
             // 
@@ -126,7 +128,7 @@
         private LinkLabel lbLogLink;
         private Label lbPaymentCode;
         private TextBox txtPaymentcode;
-        private TextBox txtPaieAuthenticationCode;
-        private Label lbUsernme;
+        public TextBox txtPaieAuthenticationCode;
+        public Label lbUsernme;
     }
 }

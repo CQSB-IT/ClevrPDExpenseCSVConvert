@@ -32,77 +32,77 @@ namespace Clevr_CSV_Converter
 
     internal class CSVConverter
     {
-        struct ClevrCSV
-        {
-            public string EmployeeID;
-            public string JobCode;
-            public DateTime BeginDate;
-            public DateTime EndDate;
-            public string BudgetCode1;
-            public decimal BudgetCodeApprovedAmount1;
-            public string BudgetCodeCenter1;
-            public string BudgetCodeProject1;
-            public string BudgetCode2;
-            public decimal BudgetCodeApprovedAmount2;
-            public string BudgetCodeCenter2;
-            public string BudgetCodeProject2;
-            public string BudgetCode3;
-            public decimal BudgetCodeApprovedAmount3;
-            public string BudgetCodeCenter3;
-            public string BudgetCodeProject3;
-            public string BudgetCode4;
-            public decimal BudgetCodeApprovedAmount4;
-            public string BudgetCodeCenter4;
-            public string BudgetCodeProject4;
-            public string BudgetCode5;
-            public decimal BudgetCodeApprovedAmount5;
-            public string BudgetCodeCenter5;
-            public string BudgetCodeProject5;
-            public string BudgetCode6;
-            public decimal BudgetCodeApprovedAmount6;
-            public string BudgetCodeCenter6;
-            public string BudgetCodeProject6;
-            public string BudgetCode7;
-            public decimal BudgetCodeApprovedAmount7;
-            public string BudgetCodeCenter7;
-            public string BudgetCodeProject7;
-            public string BudgetCode8;
-            public decimal BudgetCodeApprovedAmount8;
-            public string BudgetCodeCenter8;
-            public string BudgetCodeProject8;
-            public decimal TotalApprovedAmount;
-            public string PlaceOfWorkCode;
-        }
+        //struct ClevrCSV
+        //{
+        //    public string EmployeeID;
+        //    public string JobCode;
+        //    public DateTime BeginDate;
+        //    public DateTime EndDate;
+        //    public string BudgetCode1;
+        //    public decimal BudgetCodeApprovedAmount1;
+        //    public string BudgetCodeCenter1;
+        //    public string BudgetCodeProject1;
+        //    public string BudgetCode2;
+        //    public decimal BudgetCodeApprovedAmount2;
+        //    public string BudgetCodeCenter2;
+        //    public string BudgetCodeProject2;
+        //    public string BudgetCode3;
+        //    public decimal BudgetCodeApprovedAmount3;
+        //    public string BudgetCodeCenter3;
+        //    public string BudgetCodeProject3;
+        //    public string BudgetCode4;
+        //    public decimal BudgetCodeApprovedAmount4;
+        //    public string BudgetCodeCenter4;
+        //    public string BudgetCodeProject4;
+        //    public string BudgetCode5;
+        //    public decimal BudgetCodeApprovedAmount5;
+        //    public string BudgetCodeCenter5;
+        //    public string BudgetCodeProject5;
+        //    public string BudgetCode6;
+        //    public decimal BudgetCodeApprovedAmount6;
+        //    public string BudgetCodeCenter6;
+        //    public string BudgetCodeProject6;
+        //    public string BudgetCode7;
+        //    public decimal BudgetCodeApprovedAmount7;
+        //    public string BudgetCodeCenter7;
+        //    public string BudgetCodeProject7;
+        //    public string BudgetCode8;
+        //    public decimal BudgetCodeApprovedAmount8;
+        //    public string BudgetCodeCenter8;
+        //    public string BudgetCodeProject8;
+        //    public decimal TotalApprovedAmount;
+        //    public string PlaceOfWorkCode;
+        //}
 
-        struct GricsPaieGRHCSV
-        {
-            public string Matr;
-            public int NoSEQ;
-            public string CodePmnt;
-            public string RefEmpl;
-            public DateTime DateDeb;
-            public DateTime DateFin;
-            public string Mode;
-            public decimal NbUnit;
-            public decimal MntUnit;
-            public decimal Mnt;
-            //EXP_RECON;
-            public string NoCmpt;
-            //MATR_REMP;NO_PIECE;
-            public String LieuTrav;
-            //ADM_AE;ADM_CSST;ADM_FED;ADM_FPSQ;ADM_PROV;ADM_RR;ADM_RREGOP;ADM_RRQ;ADM_RRL;ADM_RRP;NB_JRS_PRES;NB_MIN_AUT;NB_MIN_EDUC;NB_SEM_REP;NB_SEM_RET;REPAR_AE;ADM_HEUR;
-            public string Prov;
-            public string Note;
-            public string CodeUtil;
-            public int NoTypePmnt;
-            public string CntrePrjt;
-            public string NoPrjt;
-            //ACT_CMPT;MOTIF_CMPT;IND_PMNT_INAC_REGR;IND_PMNT_INAC_GEST;ECO;GRP_DEP;RANG_ELE_EXC;
-            public DateTime DateTX;
-            //ADM_RQAP;NO_PIECE_SYST;
-            public string TypeTX;
-            public int Statut;
-        }
+        //struct GricsPaieGRHCSV
+        //{
+        //    public string Matr;
+        //    public int NoSEQ;
+        //    public string CodePmnt;
+        //    public string RefEmpl;
+        //    public DateTime DateDeb;
+        //    public DateTime DateFin;
+        //    public string Mode;
+        //    public decimal NbUnit;
+        //    public decimal MntUnit;
+        //    public decimal Mnt;
+        //    //EXP_RECON;
+        //    public string NoCmpt;
+        //    //MATR_REMP;NO_PIECE;
+        //    public String LieuTrav;
+        //    //ADM_AE;ADM_CSST;ADM_FED;ADM_FPSQ;ADM_PROV;ADM_RR;ADM_RREGOP;ADM_RRQ;ADM_RRL;ADM_RRP;NB_JRS_PRES;NB_MIN_AUT;NB_MIN_EDUC;NB_SEM_REP;NB_SEM_RET;REPAR_AE;ADM_HEUR;
+        //    public string Prov;
+        //    public string Note;
+        //    public string CodeUtil;
+        //    public int NoTypePmnt;
+        //    public string CntrePrjt;
+        //    public string NoPrjt;
+        //    //ACT_CMPT;MOTIF_CMPT;IND_PMNT_INAC_REGR;IND_PMNT_INAC_GEST;ECO;GRP_DEP;RANG_ELE_EXC;
+        //    public DateTime DateTX;
+        //    //ADM_RQAP;NO_PIECE_SYST;
+        //    public string TypeTX;
+        //    public int Statut;
+        //}
         internal class ClevrDataTable:DataTable
         {
             public ClevrDataTable() 
@@ -235,7 +235,6 @@ namespace Clevr_CSV_Converter
                 {
                     errors.Add("DATE_FIN");
                 }
-
                 int lieuTrav;
                 if (!int.TryParse(row["LIEU_TRAV"].ToString(), out lieuTrav))
                 {

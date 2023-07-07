@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Clevr_CSV_Converter
 {
     public partial class ClevrCSVCoverterForm : Form
@@ -56,7 +58,7 @@ namespace Clevr_CSV_Converter
             // Happy path
             try
             {
-                CSVConverter.Convert(sourceFilePath, destinationFilePath, txtPaymentcode.Text,txtPaieAuthenticationCode.Text);
+                CSVConverter.Convert(sourceFilePath, destinationFilePath, txtPaymentcode.Text, txtPaieAuthenticationCode.Text);
                 DisplaySuccess("CSV file conversion succeded!");
             }
             catch (ClevrDataException clevrEx)
@@ -174,7 +176,11 @@ namespace Clevr_CSV_Converter
             {
                 if (!String.IsNullOrEmpty(lastErrorFilePath))
                 {
-                    System.Diagnostics.Process.Start(@lastErrorFilePath);
+                    ProcessStartInfo psi = new ProcessStartInfo(@lastErrorFilePath);
+                    psi.Verb = "open";
+                    psi.UseShellExecute = true;
+                    Process.Start(psi);
+                    //System.Diagnostics.Process.Start(@lastErrorFilePath);
                 }
             }
             catch { }
