@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -103,6 +105,7 @@ namespace Clevr_CSV_Converter
         //    public string TypeTX;
         //    public int Statut;
         //}
+        
         internal class ClevrDataTable:DataTable
         {
             public ClevrDataTable() 
@@ -114,46 +117,47 @@ namespace Clevr_CSV_Converter
                 this.Columns.Add("LIEU_TRAV", typeof(string));
                 this.Columns.Add("PDRequest", typeof(string));
 
-                this.Columns.Add("NO_CMPT1", typeof(string));
-                this.Columns.Add("MNT1", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT1", typeof(string));
-                this.Columns.Add("NO_PRJT1", typeof(string));
+                this.Columns.Add("NO_CMPT1", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT1", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT1", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT1", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT12", typeof(string));
-                this.Columns.Add("MNT2", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT2", typeof(string));
-                this.Columns.Add("NO_PRJT2", typeof(string));
+                this.Columns.Add("NO_CMPT2", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT2", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT2", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT2", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT13", typeof(string));
-                this.Columns.Add("MNT3", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT3", typeof(string));
-                this.Columns.Add("NO_PRJT3", typeof(string));
+                this.Columns.Add("NO_CMPT3", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT3", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT3", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT3", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT14", typeof(string));
-                this.Columns.Add("MNT4", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT4", typeof(string));
-                this.Columns.Add("NO_PRJT4", typeof(string));
+                this.Columns.Add("NO_CMPT4", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT4", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT4", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT4", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT15", typeof(string));
-                this.Columns.Add("MNT5", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT5", typeof(string));
-                this.Columns.Add("NO_PRJT5", typeof(string));
+                this.Columns.Add("NO_CMPT5", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT5", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT5", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT5", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT16", typeof(string));
+                this.Columns.Add("NO_CMPT6", typeof(string)).AllowDBNull = true;
                 this.Columns.Add("MNT6", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT6", typeof(string));
-                this.Columns.Add("NO_PRJT6", typeof(string));
+                this.Columns.Add("CNTRE_PRJT6", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT6", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT17", typeof(string));
+                this.Columns.Add("NO_CMPT7", typeof(string)).AllowDBNull = true;
                 this.Columns.Add("MNT7", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT7", typeof(string));
-                this.Columns.Add("NO_PRJT7", typeof(string));
+                this.Columns.Add("CNTRE_PRJT7", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT7", typeof(string)).AllowDBNull = true;
 
-                this.Columns.Add("NO_CMPT18", typeof(string));
-                this.Columns.Add("MNT8", typeof(decimal));
-                this.Columns.Add("CNTRE_PRJT8", typeof(string));
-                this.Columns.Add("NO_PRJT8", typeof(string));               
+                this.Columns.Add("NO_CMPT8", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("MNT8", typeof(decimal)).AllowDBNull = true;
+                this.Columns.Add("CNTRE_PRJT8", typeof(string)).AllowDBNull = true;
+                this.Columns.Add("NO_PRJT8", typeof(string)).AllowDBNull = true;               
             }
+            
         }
         internal class GricsPaieGRHDataTable : DataTable
         {
@@ -252,25 +256,88 @@ namespace Clevr_CSV_Converter
                 bool isFirstRowHeader = true;
                 string header = isFirstRowHeader ? "Yes" : "No";
 
-                string pathOnly = Path.GetDirectoryName(clevrCSVPath);
-                string fileName = Path.GetFileName(clevrCSVPath);
+                //string pathOnly = Path.GetDirectoryName(clevrCSVPath);
+                //string fileName = Path.GetFileName(clevrCSVPath);
 
-                string sql = @"SELECT * FROM [" + fileName + "]";
+                // Copy file to convert to a temporary folder
+                // tempFolder = Path.GetTempPath();
+                // string tempFileNPath = tempFolder + "tempClevrFile.csv";
+                //string schemaFileNPath = tempFolder + @"Schema.ini";
+                //File.Copy(clevrCSVPath, @tempFileNPath, true);
 
-                using (OleDbConnection connection = new OleDbConnection(
-                            @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + pathOnly +
-                            ";Extended Properties=\"Text;HDR=" + header + "\""))
+                //Copy Schema.ini in temp directory to be sure datetime format works correctly
+                //File.Copy("Schema.ini", @schemaFileNPath, true);
+
+                //string sql = @"SELECT * FROM [tempClevrFile.csv]";
+
+                //using (OleDbConnection connection = new OleDbConnection(
+                //            @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + tempFolder +
+                //            ";Extended Properties=\"Text;HDR=" + header + "\""))
 
                 //Microsoft.Jet.OLEDB.4.0
-                using (OleDbCommand command = new(sql, connection))
-                using (OleDbDataAdapter adapter = new(command))
-                {
+                //using (OleDbCommand command = new(sql, connection))
+                //using (OleDbDataAdapter adapter = new(command))
+                //{
+                //    connection.Open();
+                //    OleDbDataReader reader = command.ExecuteReader();
+                //    while(reader.Read())
+                //    {
+                //        Console.WriteLine(reader.GetDataTypeName(2));
+                //        Console.WriteLine(reader.GetDataTypeName(3));
+                //    }
+                //    connection.Close();
 
-                    clevrDataTable.Locale = CultureInfo.CurrentCulture;
-                    adapter.Fill(clevrDataTable);
-                }
+                //    CultureInfo ci = CultureInfo.CreateSpecificCulture("en-CA");
+                //    ci.NumberFormat.NumberDecimalSeparator = ",";
+                //    ci.DateTimeFormat.ShortDatePattern = "M/d/yyyy";
+                //    clevrDataTable.Locale = ci;
+                //    adapter.Fill(clevrDataTable);
+
+                //}
+                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-CA");
+                ci.NumberFormat.NumberDecimalSeparator = ".";
+                ci.DateTimeFormat.ShortDatePattern = "M/d/yyyy hh:mm:ss tt";
+
+                using (StreamReader reader = new StreamReader(clevrCSVPath))
+                using (CsvReader csvReader = new CsvReader(reader,ci))
+                {                       
+                    using (CsvDataReader dr = new CsvDataReader(csvReader))
+                    {
+                        //clevrDataTable.Load(dr);
+                        Load(clevrDataTable, csvReader);
+                    }
+                }                    
+
+                    //Delete temporary files once we are done
+                    //File.Delete(@tempFileNPath);
+                //File.Delete(@schemaFileNPath);
+
                 return clevrDataTable;
              }
+
+            static void Load(DataTable dt, CsvReader csv)
+            {
+                //if (csv.Configuration.HasHeaderRecord)
+                //{
+                //    if (!csv.Read()) return;
+                //    csv.ReadHeader();
+                //}
+                
+                dt.BeginLoadData();
+                while (csv.Read())
+                {                    
+                    DataRow row = dt.NewRow();
+                    foreach(DataColumn col in dt.Columns)
+                    {
+                        object ?v;
+                        csv.TryGetField(col.DataType, col.ColumnName, out v);
+                        row[col.ColumnName] = v;
+                    }
+                    dt.Rows.Add(row);
+                }
+                dt.EndLoadData();
+            }
+
         }
 
         public static GricsPaieGRHDataTable FillGricsPaieGRHDataTable(ClevrDataTable clevrDataTable,string paymentCode, string paieGRHAuthenticationCode)
